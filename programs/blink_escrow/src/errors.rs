@@ -29,6 +29,9 @@ pub enum AppErrors {
     #[msg("Milestone has already been completed")]
     MilestoneAlreadySatisfied,
 
+    #[msg("Previous milestone has not been completed")]
+    MilestoneNotSatisfied,
+
     #[msg("Milestone has already been disputed")]
     MilestoneAlreadyDisputed,
 }

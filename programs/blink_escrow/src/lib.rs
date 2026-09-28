@@ -23,6 +23,15 @@ mod blink_escrow {
 
         let accts = &mut ctx.accounts;
 
+        if let None = accts.escrow_acct.worker {
+            return err!(AppErrors::WorkerNotFound);
+        }
+        if let Some(mile) = &accts.escrow_acct.active_milestone {
+            if !mile.is_satisfied {
+                return err!(AppErrors::MilestoneNotSatisfied);
+            }
+        }
+
         let transfer = TransferChecked {
             authority: accts.client.to_account_info(),
             from: accts.from_token_acct.to_account_info(),
@@ -53,6 +62,9 @@ mod blink_escrow {
 
         if let Some(milest) = accts.escrow_acct.active_milestone {
             require!(!milest.is_satisfied, AppErrors::MilestoneAlreadySatisfied);
+            if milest.dispute_hash.is_some(){
+                return err!(AppErrors::MilestoneAlreadyDisputed);
+            }
         };
 
         match accts.escrow_acct.worker {
@@ -192,6 +204,10 @@ mod blink_escrow {
             let cpi_ctx = CpiContext::new(accts.token_prog.to_account_info(), wkr_transfer).with_signer(&seed_wrap);
 
             transfer_checked(cpi_ctx, worker_amt, accts.mint.decimals)?;
+        };
+        
+        if let Some(mile) = &mut accts.escrow_vault.active_milestone {
+            mile.is_satisfied = true
         };
 
         Ok(())
