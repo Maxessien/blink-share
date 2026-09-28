@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::*;
 use crate::data_struct::*;
+use crate::errors;
 
 
 
@@ -20,7 +21,8 @@ pub struct CreateTknAcct<'info> {
 }
 
 #[derive(Accounts)]
-pub struct DepositMilestoneTkns<'info> {#[account(mut)]
+pub struct DepositMilestoneTkns<'info> {
+    #[account(mut)]
     pub client: Signer<'info>,
 
     pub mint: InterfaceAccount<'info, Mint>,
@@ -28,7 +30,7 @@ pub struct DepositMilestoneTkns<'info> {#[account(mut)]
     #[account(mut)]
     pub escrow_acct: Account<'info, EscrowVault>,
 
-    #[account(mut)]
+    #[account(mut, seeds=[b"tk_acct", escrow_acct.vault_id.as_bytes()], bump)]
     pub to_token_acct: InterfaceAccount<'info, TokenAccount>,
 
     #[account(mut)]
@@ -72,5 +74,40 @@ pub struct CreateEscrowVault<'info>{
 pub struct AcceptBlinkJob<'info>{
     pub signer: Signer<'info>,
 
+    #[account(mut)]
     pub escrow_vault: Account<'info, EscrowVault>,
+}
+
+#[derive(Accounts)]
+pub struct DisputeMilestone<'info> {
+    pub signer: Signer<'info>,
+
+    #[account(mut, constraint=(signer.key() == escrow_vault.client || (| |{
+        if let Some(pubk) = escrow_vault.worker { return pubk == signer.key() };
+        return false
+    })()) @ errors::AppErrors::InvalidDisputer)]
+    pub escrow_vault: Account<'info, EscrowVault>
+}
+
+#[derive(Accounts)]
+pub struct AdminRelease<'info> {
+    #[account(mut, constraint=(| |{
+        if let Some(pubk) = escrow_vault.worker { return pubk == worker_tkn_acct.owner };
+        return false
+    })())]
+    pub worker_tkn_acct: InterfaceAccount<'info, TokenAccount>,
+
+    #[account(mut, constraint=client_tkn_acct.owner==escrow_vault.client)]
+    pub client_tkn_acct: InterfaceAccount<'info, TokenAccount>,
+
+    pub signer: Signer<'info>,
+
+    #[account(mut, constraint=signer.key()==escrow_vault.admin)]
+    pub escrow_vault: Account<'info, EscrowVault>,
+
+    #[account(mut, constraint=from_tkn_acct.owner==escrow_vault.key(), seeds=[b"tk_acct", escrow_vault.vault_id.as_bytes()], bump)]
+    pub from_tkn_acct: InterfaceAccount<'info, TokenAccount>,
+    
+    pub mint: InterfaceAccount<'info, Mint>,
+    pub token_prog: Interface<'info, TokenInterface>,
 }

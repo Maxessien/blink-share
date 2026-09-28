@@ -15,5 +15,20 @@ pub enum AppErrors {
     UnauthorisedTknRelease,
 
     #[msg("Transaction must be signed by the worker")]
-    UnsignedWorker
+    UnsignedWorker,
+
+    #[msg("Job already taken")]
+    JobTaken,
+
+    #[msg("Milestone can only be disputed by vault worker or client")]
+    InvalidDisputer,
+
+    #[msg("Total amount mismatch")]
+    AmountMismatch,
+
+    #[msg("Milestone has already been completed")]
+    MilestoneAlreadySatisfied,
+
+    #[msg("Milestone has already been disputed")]
+    MilestoneAlreadyDisputed,
 }

@@ -1,11 +1,5 @@
 use anchor_lang::prelude::*;
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, InitSpace)]
-pub enum Role {
-    Client,
-    Lancer,
-}
-
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
 pub struct MileStoneContract {
     pub token_amt: u64,
@@ -22,8 +16,6 @@ pub struct  AdminReleaseType {
 #[account]
 #[derive(InitSpace)]
 pub struct EscrowVault {
-    pub role: Role,
-    pub authority: Pubkey,
     pub client: Pubkey,
     pub blink_job_info: [u8; 32],
     pub worker: Option<Pubkey>,
