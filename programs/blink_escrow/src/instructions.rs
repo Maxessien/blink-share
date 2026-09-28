@@ -90,8 +90,10 @@ pub struct DisputeMilestone<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(worker_amt: u64)]
 pub struct AdminRelease<'info> {
     #[account(mut, constraint=(| |{
+        if worker_amt == 0 {return true}
         if let Some(pubk) = escrow_vault.worker { return pubk == worker_tkn_acct.owner };
         return false
     })())]
