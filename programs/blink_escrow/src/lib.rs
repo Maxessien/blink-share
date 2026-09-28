@@ -48,16 +48,16 @@ mod blink_escrow {
         let accts = &mut ctx.accounts;
 
         if let None = accts.escrow_acct.active_milestone {
-            require!(false, AppErrors::MilestoneNotFound)
-        }
+            return err!(AppErrors::MilestoneNotFound);
+        };
 
         if let Some(milest) = accts.escrow_acct.active_milestone {
             require!(!milest.is_satisfied, AppErrors::MilestoneAlreadySatisfied);
-        }
+        };
 
         match accts.escrow_acct.worker {
             Some(pubk)=> {require_keys_eq!(pubk, accts.to_acct.owner, AppErrors::WorkerMismatch)},
-            None => {require!(false, AppErrors::WorkerNotFound)}
+            None => {return err!(AppErrors::WorkerNotFound);}
         }
 
         require!(accts.signer.key() == accts.escrow_acct.client || accts.signer.key() == accts.escrow_acct.admin, AppErrors::UnauthorisedTknRelease);
@@ -86,7 +86,7 @@ mod blink_escrow {
 
         transfer_checked(cpi_ctx, accts.escrow_acct.active_milestone.unwrap().token_amt, accts.mint.decimals)?;
 
-        if let Some(mut mile) = accts.escrow_acct.active_milestone {
+        if let Some(mile) = &mut accts.escrow_acct.active_milestone {
             mile.is_satisfied = true
         };
 
@@ -112,7 +112,7 @@ mod blink_escrow {
         let accts = &mut ctx.accounts;
 
         if let Some(_) = accts.escrow_vault.worker {
-            require!(false, AppErrors::JobTaken)
+            return err!(AppErrors::JobTaken);
         };
         
         accts.escrow_vault.worker = Some(accts.signer.key());
@@ -125,19 +125,19 @@ mod blink_escrow {
 
 
 
-        match vault.active_milestone {
-            Some(mut mile)=> {
+        match &mut vault.active_milestone {
+            Some(mile)=> {
                 match mile.dispute_hash {
                     Some(_) => {
-                        require!(false, AppErrors::MilestoneAlreadyDisputed)
+                        return err!(AppErrors::MilestoneAlreadyDisputed);
                     },
                     None=>{
                         mile.dispute_hash = Some(dispute_hash);
                     }
-                }
+                };
             },
             None=> {
-                require!(false, AppErrors::MilestoneNotFound)
+                return err!(AppErrors::MilestoneNotFound);
             }
         };
 
@@ -152,9 +152,21 @@ mod blink_escrow {
                 require!((worker_amt + client_amt == mile.token_amt), AppErrors::AmountMismatch);
             },
             None=> {
-                require!(false, AppErrors::MilestoneNotFound)
+                return err!(AppErrors::MilestoneNotFound);
             }
-        }
+        };
+        
+        let vault_id_bytes = accts.escrow_vault.vault_id.as_bytes();
+
+        let bump_byte = [accts.escrow_vault.bump]; 
+
+        let seeds: &[&[u8]] = &[
+            b"escrow_user".as_ref(),
+            vault_id_bytes,
+            &bump_byte,
+        ];
+
+        let seed_wrap = [seeds];
 
         if client_amt > 0 {
             let cl_transfer = TransferChecked {
@@ -164,7 +176,7 @@ mod blink_escrow {
                 to: accts.client_tkn_acct.to_account_info()
             };
             
-            let cpi_ctx = CpiContext::new(accts.token_prog.to_account_info(), cl_transfer);
+            let cpi_ctx = CpiContext::new(accts.token_prog.to_account_info(), cl_transfer).with_signer(&seed_wrap);
 
             transfer_checked(cpi_ctx, client_amt, accts.mint.decimals)?;
         };
@@ -177,7 +189,7 @@ mod blink_escrow {
                 to: accts.worker_tkn_acct.to_account_info()
             };
             
-            let cpi_ctx = CpiContext::new(accts.token_prog.to_account_info(), wkr_transfer);
+            let cpi_ctx = CpiContext::new(accts.token_prog.to_account_info(), wkr_transfer).with_signer(&seed_wrap);
 
             transfer_checked(cpi_ctx, worker_amt, accts.mint.decimals)?;
         };

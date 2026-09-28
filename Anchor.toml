@@ -3,7 +3,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-data_struct = "35nqDayAETPzRnjLw5bxEiw3ovzSndMp4caQLF1PXFGz"
+blink_escrow = "35nqDayAETPzRnjLw5bxEiw3ovzSndMp4caQLF1PXFGz"
 
 [registry]
 url = "https://api.apr.dev"
