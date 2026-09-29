@@ -161,7 +161,7 @@ mod blink_escrow {
 
         match accts.escrow_vault.active_milestone {
             Some(mile)=>{
-                require!((worker_amt + client_amt == mile.token_amt), AppErrors::AmountMismatch);
+                require!((worker_amt.checked_add(client_amt) == Some(mile.token_amt)), AppErrors::AmountMismatch);
                 require!(mile.dispute_hash.is_some(), AppErrors::MilestoneNotDisputed);
                 require!(!mile.is_satisfied, AppErrors::MilestoneAlreadySatisfied);
             },

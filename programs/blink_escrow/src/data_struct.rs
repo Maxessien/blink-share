@@ -23,6 +23,6 @@ pub struct EscrowVault {
     pub active_milestone: Option<MileStoneContract>,
     pub bump: u8,
 
-    #[max_len(36)]
+    #[max_len(16)]
     pub vault_id: String
 }

@@ -27,7 +27,7 @@ pub struct DepositMilestoneTkns<'info> {
 
     pub mint: InterfaceAccount<'info, Mint>,
 
-    #[account(mut)]
+    #[account(mut, has_one=client)]
     pub escrow_acct: Account<'info, EscrowVault>,
 
     #[account(mut, seeds=[b"tk_acct", escrow_acct.vault_id.as_bytes()], bump)]
