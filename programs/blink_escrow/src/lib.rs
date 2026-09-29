@@ -163,6 +163,7 @@ mod blink_escrow {
             Some(mile)=>{
                 require!((worker_amt + client_amt == mile.token_amt), AppErrors::AmountMismatch);
                 require!(mile.dispute_hash.is_some(), AppErrors::MilestoneNotDisputed);
+                require!(!mile.is_satisfied, AppErrors::MilestoneAlreadySatisfied);
             },
             None=> {
                 return err!(AppErrors::MilestoneNotFound);
