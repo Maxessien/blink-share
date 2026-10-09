@@ -1,0 +1,35 @@
+{
+  "name": "blink-escrow-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "tsx --watch src/index.ts"
+  },
+  "dependencies": {
+    "@solana/kit": "^8.3.0",
+    "bs58": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "mongoose": "^8.9.0",
+    "tweetnacl": "^1.0.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.4",
+    "tsc": "^2.0.4",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
