@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Blink Escrow API</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/assets/index.css" />
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="hero">
+                <div class="logo"><span class="dot"></span> Blink Share</div>
+                <h1>Blink Escrow API</h1>
+                <p class="sub">
+                    Off-chain indexing &amp; metadata service for the Blink
+                    Share escrow program.
+                </p>
+                <span class="pill"
+                    ><span
+                        class="dot"
+                        style="
+                            width: 7px;
+                            height: 7px;
+                            box-shadow: none;
+                            animation: none;
+                        "
+                    ></span>
+                    Service online</span
+                >
+            </div>
+
+            <div class="note">
+                This service stores off-chain escrow briefs, milestones, and
+                disputes, and cross-checks them against on-chain vault state.
+                Writes require a wallet signature via the
+                <code>x-wallet</code>, <code>x-message</code>, and
+                <code>x-signature</code> headers.
+            </div>
+
+            <div class="section-title">Available endpoints</div>
+            <div class="endpoints">
+                <div class="ep">
+                    <span class="method get">GET</span>
+                    <div>
+                        <div class="path">/health</div>
+                        <div class="desc">Liveness check.</div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method get">GET</span>
+                    <div>
+                        <div class="path">/escrows</div>
+                        <div class="desc">
+                            List escrows (filter by status/address).
+                        </div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method get">GET</span>
+                    <div>
+                        <div class="path">/escrows/:vaultId</div>
+                        <div class="desc">
+                            Get one escrow with milestones and disputes.
+                        </div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method post">POST</span>
+                    <div>
+                        <div class="path">/escrows</div>
+                        <div class="desc">Create an escrow (signed).</div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method post">POST</span>
+                    <div>
+                        <div class="path">/escrows/:vaultId/accept</div>
+                        <div class="desc">
+                            Worker accepts an escrow (signed).
+                        </div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method post">POST</span>
+                    <div>
+                        <div class="path">/escrows/:vaultId/milestones</div>
+                        <div class="desc">Propose a milestone (signed).</div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method patch">PATCH</span>
+                    <div>
+                        <div class="path">/milestones/:vaultId/:index</div>
+                        <div class="desc">
+                            Update milestone status (signed).
+                        </div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method post">POST</span>
+                    <div>
+                        <div class="path">/disputes</div>
+                        <div class="desc">Raise a dispute (signed).</div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method get">GET</span>
+                    <div>
+                        <div class="path">/disputes</div>
+                        <div class="desc">
+                            List disputes (filter by resolved).
+                        </div>
+                    </div>
+                </div>
+                <div class="ep">
+                    <span class="method post">POST</span>
+                    <div>
+                        <div class="path">/disputes/resolve</div>
+                        <div class="desc">
+                            Admin resolves a dispute (signed).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>Blink Escrow API &middot; running</footer>
+        </div>
+    </body>
+</html>

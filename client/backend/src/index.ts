@@ -12,6 +12,7 @@ import { requireAdmin, requireWallet } from "./auth.js";
 import { readVault } from "./chain.js";
 import { connectDb } from "./db.js";
 import { Dispute, Escrow, Milestone } from "./models.js";
+import { join } from "node:path";
 
 declare global {
   namespace Express {
@@ -40,6 +41,8 @@ const amount = z.string().regex(/^\d{1,20}$/);
 
 const app = express();
 app.set("trust proxy", 1);
+app.use("/assets", express.static(join(process.cwd(), "src/assets")))
+app.get("/", (req, res)=> res.sendFile(join(process.cwd(), "src/assets/index.html")))
 app.use(helmet());
 const origins = (process.env.ALLOWED_ORIGIN || "")
   .split(",")
