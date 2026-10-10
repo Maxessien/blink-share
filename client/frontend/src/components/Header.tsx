@@ -30,7 +30,7 @@ export function Header() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-primary-foreground">
             <Zap className="h-4 w-4" />
           </span>
-          Blink <span className="text-brand">Escrow</span>
+          Blink <span className="text-brand">Share</span>
         </Link>
         <nav className="hidden flex-1 items-center gap-1 md:flex">
           {links.map((l) => (
